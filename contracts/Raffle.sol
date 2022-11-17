@@ -47,7 +47,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface{
     event RequestedRaffleWinner(uint256 indexRequestId);
     event WinnerPicked(address indexed winner);
 
-    //vrfCoordinatorV2 variable will be passed into VRFConsumerBaseV2 constructor
+    //vrfCoordinatorV2 contract address will be passed into VRFConsumerBaseV2 constructor
     constructor(address vrfCoordinatorV2, uint256 entranceFee, bytes32 gasLane, uint64 subscriptionId, uint32 callbackGasLimit, uint256 interval) VRFConsumerBaseV2(vrfCoordinatorV2) {
         i_entranceFee = entranceFee;
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfCoordinatorV2);

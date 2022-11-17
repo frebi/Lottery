@@ -1,6 +1,7 @@
 const { network, ethers } = require("hardhat")
 const { developmentChains, networkConfig } = require("../helper-hardhat-config")
 const { verify } = require("../utils/verify")
+require("dotenv").config()
 
 const VRF_SUB_FUND_AMOUNT = ethers.utils.parseEther("30")
 
@@ -22,7 +23,7 @@ module.exports = async function({ getNamedAccounts, deployments }) {
         //Usually, you'd need the link token on real network
         await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, VRF_SUB_FUND_AMOUNT)
     }else{
-        vrfCoordinatorV2Address = networkConfig[chainId]["VRFCoordinatorV2"]
+        vrfCoordinatorV2Address = networkConfig[chainId]["vrfCoordinatorV2"]
         subscriptionId = networkConfig[chainId]["subscriptionId"]
     }
 
@@ -40,6 +41,12 @@ module.exports = async function({ getNamedAccounts, deployments }) {
         waitConfirmations: network.config.blockConfirmations || 1
     })
     
+
+    // Ensure the Raffle contract is a valid consumer of the VRFCoordinatorV2Mock contract.
+    if (developmentChains.includes(network.name)) {
+        const vrfCoordinatorV2Mock = await ethers.getContract("VRFCoordinatorV2Mock")
+        await vrfCoordinatorV2Mock.addConsumer(subscriptionId, raffle.address)
+    }
 
     //contract verification 
     if(!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY){
